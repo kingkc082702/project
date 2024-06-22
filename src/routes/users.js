@@ -20,4 +20,23 @@ router.get('/', async (req, res) => {
     }
 })
 
+router.post('/', async (req, res) => {
+    let connection;
+    try {
+        const { username, password } = req.body;
+        connection = await pool.getConnection();
+        const sql = 'INSERT INTO users (username, password) VALUES (?,?)';
+        const values = [username, password];
+        const [result, fields] = await pool.execute(sql, values);
+        console.log(result);
+        console.log(fields);
+        res.status(201).json(result);
+    } catch (error) {
+        console.error(`ERROR: ${error}`);
+        res.status(500).json(error);
+    } finally {
+        if (connection) connection.release();
+    }
+})
+
 export default router;
