@@ -4,12 +4,11 @@ import pool from '../config/pool.js'
 const router = express();
 
 router.get('/', async (req, res) => {
-    let connections;
+    let connection;
     try {
-        connections = await pool.getConnection();
+        connection = await pool.getConnection();
         const sql = 'SELECT * FROM users';
-        const [error, rows, fields] = pool.query(sql);
-        console.log(error);
+        const [rows, fields] = await pool.query(sql);
         console.log(rows);
         console.log(fields);
         res.status(200).json(rows);
@@ -17,7 +16,7 @@ router.get('/', async (req, res) => {
         console.error(`ERROR: ${error}`);
         res.status(500).json(error);
     } finally {
-        if (connections) connections.release();
+        if (connection) connection.release();
     }
 })
 
