@@ -60,4 +60,23 @@ router.put('/:id', async (req, res) => {
     }
 })
 
+router.delete('/:id', async (req, res) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const id = parseInt(req.params.id);
+        const sql = "DELETE FROM users WHERE id = ?";
+        const value = [id];
+        const [result, fields] = await pool.execute(sql, value);
+        console.log(result);
+        console.log(fields);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(`ERROR: ${error}`);
+        res.status(500).json(error);
+    } finally {
+        if (connection) connection.release();
+    }
+})
+
 export default router;
